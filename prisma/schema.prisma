@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  role      Role
+  username  String    @unique @db.VarChar(30)
+  firstname String    @db.VarChar(100)
+  lastname  String    @db.VarChar(100)
+  password  String    @db.VarChar(72)
+  email     String    @db.VarChar(70)
+  phone     String    @db.VarChar(10)
+  booking   Booking[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model parking {
+  id               Int       @id @default(autoincrement())
+  parking_name     String?   @db.Text
+  parking_location String?   @db.Text
+  city             String?   @db.Text
+  province         String?   @db.Text
+  photo            String?
+  Lock             Lock[]
+  Holiday          Holiday[]
+}
+
+model Lock {
+  id         Int       @id @default(autoincrement())
+  lock_name  String?   @db.Text
+  status     String    @default("ว่าง")
+  parking_id Int
+  parking    parking   @relation(fields: [parking_id], references: [id])
+  lock_price Decimal   @db.Decimal(precision: 10, scale: 2)
+  bookings   Booking[]
+}
+
+model Booking {
+  id            Int             @id @default(autoincrement())
+  booking_date  DateTime
+  total_amount  Decimal         @db.Decimal(precision: 10, scale: 2)
+  discount      Decimal         @default(0.00) @db.Decimal(precision: 10, scale: 2)
+  Vehiclenumber String          @db.VarChar(50)
+  brand         String          @db.VarChar(50)
+  user_id       Int
+  user          User            @relation(fields: [user_id], references: [id])
+  locks         Lock  @relation(fields: [lockId], references: [id])
+  BookingDetail BookingDetail[]
+  Payment       Payment[]
+  lockId        Int
+}
+
+model BookingDetail {
+  id         Int      @id @default(autoincrement())
+  booking_id Int
+  booking    Booking  @relation(fields: [booking_id], references: [id])
+  date       DateTime
+  start_time DateTime
+  end_time   DateTime
+}
+
+model Payment {
+  id             Int      @id @default(autoincrement())
+  booking_id     Int
+  booking        Booking  @relation(fields: [booking_id], references: [id])
+  amount         Decimal  @db.Decimal(precision: 10, scale: 2)
+  date           DateTime
+  payment_method String
+  status         String
+}
+
+model Holiday {
+  id          Int     @id @default(autoincrement())
+  parking_id  Int
+  parking     parking @relation(fields: [parking_id], references: [id])
+  day_of_week String
+}

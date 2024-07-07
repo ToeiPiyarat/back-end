@@ -1,3 +1,4 @@
+const { parse } = require('dotenv')
 const db = require('../models/db')
 
 exports.carvehicle = async (req, res, next) => {
@@ -61,7 +62,7 @@ exports.lockG = async (req, res, next) => {
     try {
         const locks = await db.lock.findMany({
             include: {
-                parking: true, // Include the related parking data
+                parking: true, 
             }
         });
         res.json(locks);
@@ -84,3 +85,56 @@ exports.lockGid = async (req, res, next) => {
         next(err)
     }
 }
+
+exports.parkingInput = async (req, res, next) => {
+    try{
+        const {parking_name, parking_location, city, province, photo} = req.body
+
+        const parksG = await db.parking.create({
+            data: {
+                parking_name,
+                parking_location,
+                city,
+                province,
+                photo
+            }
+        })
+        res.json({mas: 'parking is : ', parksG})
+    }catch(err){
+        console.error(err)
+        next()
+    }
+    
+} 
+
+exports.Lock = async (req, res, next) => {
+    try{
+        const {lock_name, status, parking_id, lock_price} = req.body
+        const Locks = await db.lock.create({
+          data: {
+            lock_name,
+            status,
+            parking_id: parseInt(parking_id),
+            lock_price: parseFloat(lock_price)
+          }
+        })
+        res.json({mas: 'Lock is : ', Locks})
+    }catch(err){
+        next(err)
+    }
+}
+
+exports.deleteLock = async (req, res, next) => {
+    const { id } = req.params;
+  
+    try {
+      const deletedLock = await db.lock.delete({
+        where: {
+          id: Number(id)
+        }
+      });
+      res.json(deletedLock);
+    } catch (error) {
+      next(error)
+    }
+  };

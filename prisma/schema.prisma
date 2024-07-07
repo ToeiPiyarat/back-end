@@ -28,7 +28,7 @@ enum Role {
 
 model parking {
   id               Int       @id @default(autoincrement())
-  parking_name     String?   @db.Text
+  parking_name     String
   parking_location String?   @db.Text
   city             String?   @db.Text
   province         String?   @db.Text

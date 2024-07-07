@@ -1,5 +1,8 @@
 const db = require('../models/db')
 
+const { Linenotifys } = require('./LineNotify')
+const token = 'nP6MRtQ4yjQ5MoRszpJm1Y3nFRImfqbjaBFApmxxQbY'
+
 exports.payments = async (req, res, next) => {
     try{
         const { booking_id, amount, date, payment_method, status} = req.body
@@ -12,6 +15,10 @@ exports.payments = async (req, res, next) => {
                 status
             }
         })
+
+        const text = `text = ไอดีการจองที่: ${booking_id}\n ราคา: ${amount}\n เวลา: ${date}รายการ \n สถานะ ${status}`
+        await Linenotifys(token,text)
+
         res.json({mag: 'payments is :', payment})
     }catch(err){
         next(err)
@@ -37,3 +44,20 @@ exports.userpayment = async (req, res, next) => {
       return res.status(500).json({ error: "Internal server error" });
     }
   };
+
+exports.paymentGet = async (req, res, next) => {
+  try{
+    const payments = await db.payment.findMany({
+      include: {
+        booking: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    res.json(payments)
+  }catch(err){
+    next(err)
+  }
+}

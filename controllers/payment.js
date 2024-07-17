@@ -34,7 +34,15 @@ exports.userpayment = async (req, res, next) => {
           }
         },
         include: {
-          booking: true
+          booking: {
+            include: {
+              locks: {
+                include: {
+                  parking: true
+                }
+              }
+            }
+          }
         }
       });
   
@@ -52,6 +60,11 @@ exports.paymentGet = async (req, res, next) => {
         booking: {
           include: {
             user: true,
+            locks: {
+              include: {
+                parking: true
+              }
+            }
           },
         },
       },

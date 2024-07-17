@@ -138,3 +138,20 @@ exports.deleteLock = async (req, res, next) => {
       next(error)
     }
   };
+
+  exports.deleteParking = async (req, res, next) => {
+    const { id } = req.params;
+  
+    try {
+      const deletedParking = await db.parking.delete({
+        where: {
+          id: Number(id)
+        }
+      });
+      res.json(deletedParking);
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  };
+  

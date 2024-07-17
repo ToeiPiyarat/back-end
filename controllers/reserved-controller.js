@@ -67,18 +67,20 @@ const db = require('../models/db')
 // }
 
 exports.updateProfire = async (req, res, next) => {
-    const {email, phone} = req.body
+    const {firstname, lastname, email, phone} = req.body
     try {
-        const reserved = await db.user.update({
+        const booking = await db.user.update({
             where: {
                 id: req.user.id
             },
             data: {
+                firstname,
+                lastname,
                 email,
                 phone
             }
         })
-        res.json(reserved)
+        res.json(booking)
 
     } catch (error) {
         next(error)
@@ -105,26 +107,31 @@ exports.updateProfire = async (req, res, next) => {
 //         next(error)
 //     }
 // }
-
 exports.Bookings = async (req, res, next) => {
-    try{
-        const { booking_date, total_amount, discount, Vehiclenumber, brand, user_id, lockId } = req.body
+    try {
+        const { booking_date, total_amount, discount, vehicle_number, brand, user_id, lockId } = req.body;
+        console.log(booking_date, total_amount, discount, vehicle_number, brand, user_id, lockId);
         const booking = await db.booking.create({
-             data: {
+            data: {
                 booking_date: new Date(booking_date),
                 total_amount: parseFloat(total_amount),
                 discount: parseFloat(discount),
-                Vehiclenumber,
+                vehicle_number, // เปลี่ยนเป็น `vehicle_number` ที่ถูกต้องตาม schema ของฐานข้อมูล
                 brand,
                 user_id: parseInt(user_id),
                 lockId: parseInt(lockId)
-                }
-            });
-        res.json({mes: "booking is : ", booking})
+            }
+        });
+        res.json({ mes: "booking is : ", booking });
+    } catch (err) {
+        next(err);
+    }
+};
 
-        const {id} = req.params
-
-        
+exports.showBookin = async (req, res, next) => {
+    try{
+        const shbokin = await db.booking.findMany({})
+        res.json(shbokin)
     }catch(err){
         next(err)
     }

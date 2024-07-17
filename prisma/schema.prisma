@@ -27,14 +27,13 @@ enum Role {
 }
 
 model parking {
-  id               Int       @id @default(autoincrement())
+  id               Int     @id @default(autoincrement())
   parking_name     String
-  parking_location String?   @db.Text
-  city             String?   @db.Text
-  province         String?   @db.Text
-  photo            String?
+  parking_location String? @db.Text
+  city             String? @db.Text
+  province         String? @db.Text
+  photo            String? @db.VarChar(100)
   Lock             Lock[]
-  Holiday          Holiday[]
 }
 
 model Lock {
@@ -48,27 +47,17 @@ model Lock {
 }
 
 model Booking {
-  id            Int             @id @default(autoincrement())
-  booking_date  DateTime
-  total_amount  Decimal         @db.Decimal(precision: 10, scale: 2)
-  discount      Decimal         @default(0.00) @db.Decimal(precision: 10, scale: 2)
-  Vehiclenumber String          @db.VarChar(50)
-  brand         String          @db.VarChar(50)
+  id            Int       @id @default(autoincrement())
+  booking_date  DateTime  @default(now())
+  total_amount  Decimal   @db.Decimal(precision: 10, scale: 2)
+  discount      Decimal   @default(0.00) @db.Decimal(precision: 10, scale: 2)
+  vehicle_number String    @db.VarChar(50)
+  brand         String    @db.VarChar(50)
   user_id       Int
-  user          User            @relation(fields: [user_id], references: [id])
-  locks         Lock  @relation(fields: [lockId], references: [id])
-  BookingDetail BookingDetail[]
+  user          User      @relation(fields: [user_id], references: [id])
+  locks         Lock      @relation(fields: [lockId], references: [id])
   Payment       Payment[]
   lockId        Int
-}
-
-model BookingDetail {
-  id         Int      @id @default(autoincrement())
-  booking_id Int
-  booking    Booking  @relation(fields: [booking_id], references: [id])
-  date       DateTime
-  start_time DateTime
-  end_time   DateTime
 }
 
 model Payment {
@@ -79,11 +68,4 @@ model Payment {
   date           DateTime
   payment_method String
   status         String
-}
-
-model Holiday {
-  id          Int     @id @default(autoincrement())
-  parking_id  Int
-  parking     parking @relation(fields: [parking_id], references: [id])
-  day_of_week String
 }

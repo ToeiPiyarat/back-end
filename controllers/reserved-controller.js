@@ -66,26 +66,26 @@ const db = require('../models/db')
 //     }
 // }
 
-exports.updateProfire = async (req, res, next) => {
-    const {firstname, lastname, email, phone} = req.body
-    try {
-        const booking = await db.user.update({
-            where: {
-                id: req.user.id
-            },
-            data: {
-                firstname,
-                lastname,
-                email,
-                phone
-            }
-        })
-        res.json(booking)
+// exports.updateProfire = async (req, res, next) => {
+//     const {firstname, lastname, email, phone} = req.body
+//     try {
+//         const update = await db.user.update({
+//             where: {
+//                 id: req.user.id
+//             },
+//             data: {
+//                 firstname,
+//                 lastname,
+//                 email,
+//                 phone
+//             }
+//         })
+//         res.json(update)
 
-    } catch (error) {
-        next(error)
-    }
-}
+//     } catch (error) {
+//         next(error)
+//     }
+// }
 
 // exports.updatererved = async (req, res, next) => {
 
@@ -107,6 +107,7 @@ exports.updateProfire = async (req, res, next) => {
 //         next(error)
 //     }
 // }
+
 exports.Bookings = async (req, res, next) => {
     try {
         const { booking_date, total_amount, discount, vehicle_number, brand, user_id, lockId } = req.body;
@@ -116,7 +117,7 @@ exports.Bookings = async (req, res, next) => {
                 booking_date: new Date(booking_date),
                 total_amount: parseFloat(total_amount),
                 discount: parseFloat(discount),
-                vehicle_number, // เปลี่ยนเป็น `vehicle_number` ที่ถูกต้องตาม schema ของฐานข้อมูล
+                vehicle_number, 
                 brand,
                 user_id: parseInt(user_id),
                 lockId: parseInt(lockId)
@@ -136,3 +137,4 @@ exports.showBookin = async (req, res, next) => {
         next(err)
     }
 }
+

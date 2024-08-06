@@ -139,7 +139,7 @@ exports.deleteLock = async (req, res, next) => {
     }
   };
 
-  exports.deleteParking = async (req, res, next) => {
+exports.deleteParking = async (req, res, next) => {
     const { id } = req.params;
   
     try {

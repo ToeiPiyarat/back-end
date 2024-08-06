@@ -32,7 +32,7 @@ model parking {
   parking_location String? @db.Text
   city             String? @db.Text
   province         String? @db.Text
-  photo            String? @db.VarChar(100)
+  photo            String? @db.Text
   Lock             Lock[]
 }
 
@@ -47,17 +47,17 @@ model Lock {
 }
 
 model Booking {
-  id            Int       @id @default(autoincrement())
-  booking_date  DateTime  @default(now())
-  total_amount  Decimal   @db.Decimal(precision: 10, scale: 2)
-  discount      Decimal   @default(0.00) @db.Decimal(precision: 10, scale: 2)
+  id             Int       @id @default(autoincrement())
+  booking_date   DateTime  @default(now())
+  total_amount   Decimal   @db.Decimal(precision: 10, scale: 2)
+  discount       Decimal   @default(0.00) @db.Decimal(precision: 10, scale: 2)
   vehicle_number String    @db.VarChar(50)
-  brand         String    @db.VarChar(50)
-  user_id       Int
-  user          User      @relation(fields: [user_id], references: [id])
-  locks         Lock      @relation(fields: [lockId], references: [id])
-  Payment       Payment[]
-  lockId        Int
+  brand          String    @db.VarChar(50)
+  user_id        Int
+  user           User      @relation(fields: [user_id], references: [id])
+  locks          Lock      @relation(fields: [lockId], references: [id])
+  Payment        Payment[]
+  lockId         Int
 }
 
 model Payment {
@@ -66,6 +66,6 @@ model Payment {
   booking        Booking  @relation(fields: [booking_id], references: [id])
   amount         Decimal  @db.Decimal(precision: 10, scale: 2)
   date           DateTime
-  payment_method String
+  payment_method String   @db.Text
   status         String
 }

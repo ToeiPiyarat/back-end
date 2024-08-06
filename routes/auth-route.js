@@ -5,6 +5,7 @@ const authController = require('../controllers/auth-controller')
 
 router.post('/register', authController.register)
 router.post('/login', authController.login)
-router.get('/me', authenticate, authController.getme)//เอาข้อมูลส่วนตัวเราออกมา
+router.get('/me', authenticate, authController.getme)
+router.patch("/update/:id",authenticate, authController.updateProfire)
 
 module.exports = router

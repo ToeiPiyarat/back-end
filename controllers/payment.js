@@ -2,6 +2,7 @@ const db = require('../models/db')
 
 const { Linenotifys } = require('./LineNotify')
 const token = 'nP6MRtQ4yjQ5MoRszpJm1Y3nFRImfqbjaBFApmxxQbY'
+const { addDays, isBefore } = require('date-fns');
 
 exports.payments = async (req, res, next) => {
     try{
@@ -74,3 +75,79 @@ exports.paymentGet = async (req, res, next) => {
     next(err)
   }
 }
+
+exports.updatestatus = async (req, res, next) => {
+  try {
+    const { booking_id } = req.body;
+
+    
+    const currentPayment = await db.payment.findFirst({
+      where: { booking_id: parseInt(booking_id, 10) }
+    });
+
+    if (currentPayment) {
+      // ตรวจสอบว่ามีสถานะเป็น 'ชำระแล้ว'
+      if (currentPayment.status === 'ชำระแล้ว') {
+        const bookingDate = new Date(currentPayment.date); // วันที่ของการจอง
+        const currentDate = new Date(); // วันที่ปัจจุบัน
+        
+        // คำนวณวันที่ครบกำหนด 1 วัน
+        const dueDate = addDays(bookingDate, 1);
+
+        // ตรวจสอบว่าวันที่ปัจจุบันเลยวันที่ครบกำหนดหรือไม่
+        if (isBefore(currentDate, dueDate)) {
+          return res.json({ msg: 'Payment status is still within the 7-day period' });
+        }
+
+        // อัปเดตสถานะเป็น 'Completed'
+        const updatedPayment = await db.payment.update({
+          where: { id: currentPayment.id },  // ใช้ id แทน booking_id ในการอัปเดต
+          data: { status: 'สิ้นสุดดการจอง' }
+        });
+        
+
+        // ส่งผลลัพธ์กลับไปยังผู้ร้องขอ
+        res.json({ msg: 'Payment status updated to Completed', updatedPayment });
+      } else {
+        // ส่งข้อความแจ้งเมื่อสถานะไม่ถูกต้อง
+        res.status(400).json({ msg: 'Payment status is not "ชำระแล้ว"' });
+      }
+    } else {
+      // ส่งข้อความแจ้งเมื่อไม่พบการชำระเงิน
+      res.status(400).json({ msg: 'booking_id not found' });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deletePayment = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const deletePayment = await db.payment.delete({
+      where: {
+        id: Number(id)
+      }
+    });
+    res.json(deletePayment);
+  }catch (error) {
+    console.error(error);
+    next(error)
+  }
+};
+
+exports.updatePaymentStatus = async (req, res, next) => {
+  try {
+    const { id, status } = req.body;
+
+    const updatedPayment = await db.payment.update({
+      where: { id: parseInt(id, 10) },
+      data: { status }
+    });
+
+    res.json({ msg: 'Payment status updated', updatedPayment });
+  } catch (err) {
+    next(err);
+  }
+};
